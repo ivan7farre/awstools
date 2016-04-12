@@ -18,6 +18,7 @@
 import pynagios
 from pynagios import Plugin, make_option, Response
 import boto
+import boto.ec2
 from boto.ec2 import regions
 
 
@@ -47,7 +48,10 @@ class AvailabilityZonesCheck(Plugin):
             self.options.region = ["us-east-1"]
 
         if self.options.allregions:
-            regs = regions()
+            regs = []
+            ec2_conn = boto.ec2.connection.EC2Connection()
+            for region in ec2_conn.get_all_regions():
+              regs.append(region)
         else:
             regs = []
             for ropt in self.options.region:
